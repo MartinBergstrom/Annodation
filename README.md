@@ -39,4 +39,4 @@ public class ChessLetterValidator implements Validator<Character> {
 ```
 
 The main entry point is
-[AnnotationValidationEngine.java](https://github.com/MartinBergstrom/Annodation/blob/master/src/main/java/main/AnnodationValidationEngine.java)
+[AnnodationValidationEngine.java](https://github.com/MartinBergstrom/Annodation/blob/master/src/main/java/main/AnnodationValidationEngine.java)
