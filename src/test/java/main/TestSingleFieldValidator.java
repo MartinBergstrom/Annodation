@@ -29,14 +29,14 @@ public class TestSingleFieldValidator {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("string validation Failed");
 
-        AnnotationValidationEngine.runValidationOnBean(mockPojoSingle);
+        AnnodationValidationEngine.runValidationOnBean(mockPojoSingle);
     }
 
     @Test
     public void shouldNotThrowExceptionWhenValidationPassed() {
         MockPojoSingle mockPojoSingle = new MockPojoSingle("hello");
 
-        AnnotationValidationEngine.runValidationOnBean(mockPojoSingle);
+        AnnodationValidationEngine.runValidationOnBean(mockPojoSingle);
     }
 
     public static class MockValidatorString implements Validator<String> {

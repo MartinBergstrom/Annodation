@@ -31,7 +31,7 @@ public class TestClassValidator {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("class validation failed");
 
-        AnnotationValidationEngine.runValidationOnBean(mockPojo);
+        AnnodationValidationEngine.runValidationOnBean(mockPojo);
     }
 
     @Test
@@ -42,13 +42,13 @@ public class TestClassValidator {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("field validation failed");
 
-        AnnotationValidationEngine.runValidationOnBean(mockPojo);
+        AnnodationValidationEngine.runValidationOnBean(mockPojo);
     }
 
     @Test
     public void shouldPassWhenBothClassAndFieldValidators() {
 
-        AnnotationValidationEngine.runValidationOnBean(new MockPojoWithFieldValidators("valid", 2));
+        AnnodationValidationEngine.runValidationOnBean(new MockPojoWithFieldValidators("valid", 2));
     }
 
     public static class MockValidatorOnClass implements Validator<MockPojo> {

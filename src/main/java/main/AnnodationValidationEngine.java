@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AnnotationValidationEngine
+public class AnnodationValidationEngine
 {
     /**
      * Main entry point to perform validation.
@@ -103,7 +103,7 @@ public class AnnotationValidationEngine
                                                                                                   valueClazz);
         if (foundValidatorClazzMatchingValueType == null)
         {
-            throw new RuntimeException("Annotation: " + annotationClazz.getSimpleName() + " has no validator for type: "
+            throw new AnnodationSetupException("Annotation: " + annotationClazz.getSimpleName() + " has no validator for type: "
                     + valueClazz.getName() + ". Please verify validators");
         }
         return foundValidatorClazzMatchingValueType;
@@ -120,9 +120,9 @@ public class AnnotationValidationEngine
        {
            return null;
        }
-       if(foundMatching.size() > 1)
+       if (foundMatching.size() > 1)
        {
-           throw new RuntimeException("More than one possible validator found for type: " + valueClazz.getName() +
+           throw new AnnodationSetupException("More than one possible validator found for type: " + valueClazz.getName() +
                    " on annotation class: " + annotationClazz.getClass().getSimpleName());
        }
         @SuppressWarnings("unchecked")

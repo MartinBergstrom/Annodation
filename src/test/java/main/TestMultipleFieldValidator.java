@@ -26,7 +26,7 @@ public class TestMultipleFieldValidator {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("string validation Failed");
 
-        AnnotationValidationEngine.runValidationOnBean(mockPojo);
+        AnnodationValidationEngine.runValidationOnBean(mockPojo);
     }
 
     @Test
@@ -36,14 +36,14 @@ public class TestMultipleFieldValidator {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("long validation Failed");
 
-        AnnotationValidationEngine.runValidationOnBean(mockPojo);
+        AnnodationValidationEngine.runValidationOnBean(mockPojo);
     }
 
     @Test
     public void shouldNotThrowExceptionWhenValidationPassed() {
         MockPojoMultipleFields mockPojo = new MockPojoMultipleFields("hello", 2L);
 
-        AnnotationValidationEngine.runValidationOnBean(mockPojo);
+        AnnodationValidationEngine.runValidationOnBean(mockPojo);
     }
 
     public static class MockPojoMultipleFields {
