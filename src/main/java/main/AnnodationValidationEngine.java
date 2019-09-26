@@ -30,7 +30,8 @@ public class AnnodationValidationEngine
         try
         {
             runValidationOnFieldsWithAnnotationValidation(obj);
-        } catch (SecurityException e)
+        }
+        catch (SecurityException e)
         {
             throw new AnnodationSetupException("SecurityException during validation occurred, " +
                     "check configured security manager permissions");
@@ -43,7 +44,8 @@ public class AnnodationValidationEngine
         try {
             field.setAccessible(true);
             return (V) field.get(object);
-        } catch (IllegalAccessException e) {
+        }
+        catch (IllegalAccessException e) {
             throw new AnnodationSetupException("Exception during validation occurred, could not obtain value");
         }
     }
@@ -68,7 +70,8 @@ public class AnnodationValidationEngine
         try
         {
             validator.newInstance().validate(obj);
-        } catch (IllegalAccessException| InstantiationException e)
+        }
+        catch (IllegalAccessException| InstantiationException e)
         {
             e.printStackTrace();
             throw new AnnodationSetupException("Could not instantiate Validator class to be performed on class: " + obj.getClass().getSimpleName() +
@@ -85,7 +88,8 @@ public class AnnodationValidationEngine
             @SuppressWarnings("unchecked")
             Class<? extends Validator<V>> validator = getValidator(annotationClazzOnField, (Class<V>) value.getClass());
             validator.newInstance().validate(value);
-        } catch (IllegalAccessException| InstantiationException e)
+        }
+        catch (IllegalAccessException| InstantiationException e)
         {
             e.printStackTrace();
             throw new AnnodationSetupException("Could not instantiate Validator class to be performed on field: " + field.getName()+
