@@ -1,6 +1,6 @@
 package main;
 
-import annotations.ValidatedBy;
+import annotations.ValidateWith;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -60,7 +60,7 @@ public class TestSingleFieldValidator {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    @ValidatedBy(implClass = MockValidatorString.class)
+    @ValidateWith(implClass = MockValidatorString.class)
     @interface TestAnnotationSingle {
     }
 

@@ -1,6 +1,6 @@
 package main;
 
-import annotations.ValidatedBy;
+import annotations.ValidateWith;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -18,7 +18,7 @@ public class AnnotationValidationEngine
     /**
      * Main entry point to perform validation.
      *
-     * Will search recursively for all fields/classes containing the meta-annotation {@link ValidatedBy} then trigger
+     * Will search recursively for all fields/classes containing the meta-annotation {@link ValidateWith} then trigger
      * the validator for the given type (if provided)
      *
      * @param obj the java bean to run validation on, including it's fields recursively
@@ -88,16 +88,19 @@ public class AnnotationValidationEngine
         {
             return Arrays.stream(annotatedElement.getDeclaredAnnotations())
                     .map(Annotation::annotationType)
-                    .filter(annotationType -> annotationType.isAnnotationPresent(ValidatedBy.class))
+                    .filter(annotationType -> annotationType.isAnnotationPresent(ValidateWith.class))
                     .findFirst();
         }
         return Optional.empty();
     }
 
-    private static <T extends Class<? extends Annotation>, V> Class<? extends Validator<V>> getValidator(T annotationClazz, Class<V> valueClazz)
+    private static <T extends Class<? extends Annotation>, V> Class<? extends Validator<V>> getValidator(T annotationClazz,
+                                                                                                         Class<V> valueClazz)
     {
-        Class<? extends Validator<?>>[] availableValidators = annotationClazz.getAnnotation(ValidatedBy.class).implClass();
-        Class<? extends Validator<V>> foundValidatorClazzMatchingValueType = findValidatorForType(annotationClazz, availableValidators, valueClazz);
+        Class<? extends Validator<?>>[] availableValidators = annotationClazz.getAnnotation(ValidateWith.class).implClass();
+        Class<? extends Validator<V>> foundValidatorClazzMatchingValueType = findValidatorForType(annotationClazz,
+                                                                                                  availableValidators,
+                                                                                                  valueClazz);
         if (foundValidatorClazzMatchingValueType == null)
         {
             throw new RuntimeException("Annotation: " + annotationClazz.getSimpleName() + " has no validator for type: "

@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface ValidatedBy
+public @interface ValidateWith
 {
 
     Class<? extends Validator<?>>[] implClass();

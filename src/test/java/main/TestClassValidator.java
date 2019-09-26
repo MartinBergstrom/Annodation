@@ -1,6 +1,6 @@
 package main;
 
-import annotations.ValidatedBy;
+import annotations.ValidateWith;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -111,13 +111,13 @@ public class TestClassValidator {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
-    @ValidatedBy(implClass = {MockValidatorOnClass.class, MockValidatorOnClass2.class})
+    @ValidateWith(implClass = {MockValidatorOnClass.class, MockValidatorOnClass2.class})
     @interface TestClassAnnotation {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    @ValidatedBy(implClass = MockValidatorOnField.class)
+    @ValidateWith(implClass = MockValidatorOnField.class)
     @interface TestFieldAnnotation {
     }
 }
