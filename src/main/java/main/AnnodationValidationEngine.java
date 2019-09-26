@@ -27,7 +27,14 @@ public class AnnodationValidationEngine
      */
     public static <T> void runValidationOnBean(T obj)
     {
-        runValidationOnFieldsWithAnnotationValidation(obj);
+        try
+        {
+            runValidationOnFieldsWithAnnotationValidation(obj);
+        } catch (SecurityException e)
+        {
+            throw new AnnodationSetupException("SecurityException during validation occurred, " +
+                    "check configured security manager permissions");
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -58,9 +65,11 @@ public class AnnodationValidationEngine
     private static <V> void performValidationOnClass(V obj, Class<? extends Annotation> annotationClazzOnClass)
     {
         Class<? extends Validator<V>> validator = getValidator(annotationClazzOnClass, (Class<V>) obj.getClass());
-        try {
+        try
+        {
             validator.newInstance().validate(obj);
-        } catch (IllegalAccessException| InstantiationException e) {
+        } catch (IllegalAccessException| InstantiationException e)
+        {
             e.printStackTrace();
             throw new AnnodationSetupException("Could not instantiate Validator class to be performed on class: " + obj.getClass().getSimpleName() +
                     " . Verify Validator class visibility");
@@ -69,13 +78,15 @@ public class AnnodationValidationEngine
 
     private static <T, V> void performValidationOnField(T obj, Field field, Class<? extends Annotation> annotationClazzOnField)
     {
-        try {
+        try
+        {
             field.setAccessible(true);
             V value = getValueFromField(field, obj);
             @SuppressWarnings("unchecked")
             Class<? extends Validator<V>> validator = getValidator(annotationClazzOnField, (Class<V>) value.getClass());
             validator.newInstance().validate(value);
-        } catch (IllegalAccessException| InstantiationException e) {
+        } catch (IllegalAccessException| InstantiationException e)
+        {
             e.printStackTrace();
             throw new AnnodationSetupException("Could not instantiate Validator class to be performed on field: " + field.getName()+
                     " . Verify Validator class visibility");
