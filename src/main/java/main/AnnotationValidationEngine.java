@@ -3,6 +3,7 @@ package main;
 import annotations.ValidatedBy;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -17,53 +18,75 @@ public class AnnotationValidationEngine
     /**
      * Main entry point to perform validation.
      *
-     * Will search recursively for all fields containing the meta-annotation {@link ValidatedBy} then trigger
+     * Will search recursively for all fields/classes containing the meta-annotation {@link ValidatedBy} then trigger
      * the validator for the given type (if provided)
      *
      * @param obj the java bean to run validation on, including it's fields recursively
      * @param <T> the type of object
      *
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      */
-    public static <T> void runValidationOnBean(T obj) throws IllegalAccessException, InstantiationException
+    public static <T> void runValidationOnBean(T obj)
     {
         runValidationOnFieldsWithAnnotationValidation(obj);
     }
 
     @SuppressWarnings("unchecked")
-    private static <V, T> V getValueFromField(Field field, T object) throws IllegalAccessException
+    private static <V, T> V getValueFromField(Field field, T object)
     {
-        return (V) field.get(object);
+        try {
+            field.setAccessible(true);
+            return (V) field.get(object);
+        } catch (IllegalAccessException e) {
+            throw new AnnodationSetupException("Exception during validation occurred, could not obtain value");
+        }
     }
 
-    private static <T, V> void runValidationOnFieldsWithAnnotationValidation(T obj) throws IllegalAccessException, InstantiationException
+    private static <T> void runValidationOnFieldsWithAnnotationValidation(T obj)
     {
+        hasValidationAnnotation(obj.getClass()).ifPresent(aClass -> performValidationOnClass(obj, aClass));
         for (Field field : obj.getClass().getDeclaredFields())
         {
             if (field.getType().getDeclaredFields().length > 0)
             {
-                field.setAccessible(true);
-                runValidationOnFieldsWithAnnotationValidation(field.get(obj));
+                runValidationOnFieldsWithAnnotationValidation(getValueFromField(field, obj));
             }
-
-            Optional<? extends Class<? extends Annotation>> annotationClazz = hasValidationAnnotation(field);
-            if (annotationClazz.isPresent())
-            {
-                field.setAccessible(true);
-                V value = getValueFromField(field, obj);
-                @SuppressWarnings("unchecked")
-                Class<? extends Validator<V>> validator = getValidator(annotationClazz.get(), (Class<V>) value.getClass());
-                validator.newInstance().validate(value);
-            }
+            hasValidationAnnotation(field).ifPresent(aClass -> performValidationOnField(obj, field, aClass));
         }
     }
 
-    private static Optional<? extends Class<? extends Annotation>> hasValidationAnnotation(Field field)
+    @SuppressWarnings("unchecked")
+    private static <V> void performValidationOnClass(V obj, Class<? extends Annotation> annotationClazzOnClass)
     {
-        if (field.getDeclaredAnnotations().length > 0)
+        Class<? extends Validator<V>> validator = getValidator(annotationClazzOnClass, (Class<V>) obj.getClass());
+        try {
+            validator.newInstance().validate(obj);
+        } catch (IllegalAccessException| InstantiationException e) {
+            e.printStackTrace();
+            throw new AnnodationSetupException("Could not instantiate Validator class to be performed on class: " + obj.getClass().getSimpleName() +
+                    " . Verify Validator class visibility");
+        }
+    }
+
+    private static <T, V> void performValidationOnField(T obj, Field field, Class<? extends Annotation> annotationClazzOnField)
+    {
+        try {
+            field.setAccessible(true);
+            V value = getValueFromField(field, obj);
+            @SuppressWarnings("unchecked")
+            Class<? extends Validator<V>> validator = getValidator(annotationClazzOnField, (Class<V>) value.getClass());
+            validator.newInstance().validate(value);
+        } catch (IllegalAccessException| InstantiationException e) {
+            e.printStackTrace();
+            throw new AnnodationSetupException("Could not instantiate Validator class to be performed on field: " + field.getName()+
+                    " . Verify Validator class visibility");
+        }
+    }
+
+    private static Optional<? extends Class<? extends Annotation>> hasValidationAnnotation(AnnotatedElement annotatedElement)
+    {
+        if (annotatedElement.getDeclaredAnnotations().length > 0)
         {
-            return Arrays.stream(field.getDeclaredAnnotations())
+            return Arrays.stream(annotatedElement.getDeclaredAnnotations())
                     .map(Annotation::annotationType)
                     .filter(annotationType -> annotationType.isAnnotationPresent(ValidatedBy.class))
                     .findFirst();
